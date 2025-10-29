@@ -12,11 +12,17 @@
                     <div class="collapse navbar-collapse" id="main_nav">
                         @if (count($menu) > 0)
                         <ul class="navbar-nav">
-                            @foreach ($menu as $item)
-                            <li class="nav-item">
-                                <a class="nav-link{{ request()->url() == $item["href"] ? " active" : "" }}" href="{{ $item["href"] }}">{{ $item["text"] }}</a>
-                            </li>
-                            @endforeach
+                            @foreach($menu as $item)
+                                @php
+                                    $href   = $item['href']  ?? $item['url']  ?? '#';
+                                    $label  = $item['label'] ?? $item['text'] ?? 'Menu';
+                                    $active = request()->is(ltrim(parse_url($href, PHP_URL_PATH) ?? '', '/')) ? 'active' : '';
+                                @endphp
+
+                                <li class="nav-item">
+                                    <a class="nav-link {{ $active }}" href="{{ url($href) }}">{{ $label }}</a>
+                                </li>
+                             @endforeach
                         </ul>
                         @endif
                     </div>
