@@ -9,7 +9,12 @@
                             <h6>Menu</h6>
                             <ul>
                                 @foreach ($menu as $item)
-                                <li><a href="{{ $item["href"] }}">{{ $item["text"] }}</a></li>
+                               <li>
+  <a href="{{ $item['href'] ?? '#' }}">
+    {{ $item['title'] ?? $item['text'] ?? 'Menu' }}
+  </a>
+</li>
+
                                 @endforeach
                             </ul>
                         </div>
