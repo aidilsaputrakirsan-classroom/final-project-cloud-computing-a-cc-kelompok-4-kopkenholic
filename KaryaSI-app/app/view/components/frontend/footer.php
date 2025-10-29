@@ -5,28 +5,41 @@ namespace App\View\Components\Frontend;
 use App\Models\Menu;
 use App\Models\SiteSetting;
 use App\Models\SocialMedia;
-use Closure;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\Component;
 
 class Footer extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() {}
 
-    /**
-     * Get the view / contents that represent the component.
-     */
-    public function render(): View|Closure|string
+    public function render(): View|string
     {
+        // Site settings (boleh null di Blade)
         $sitesettings = SiteSetting::first();
-        $socialmedia = SocialMedia::whereStatus(true)->orderBy("id", "ASC")->get();
-        $menu = json_decode(Menu::first()->footer_menu, true);
-        return view('components.frontend.footer', compact("sitesettings", "socialmedia", "menu"));
+
+        // Social media: aman kalau tabel/model belum ada
+        $socialmedia = collect();
+        if (class_exists(SocialMedia::class) && Schema::hasTable('social_media')) {
+            $socialmedia = SocialMedia::where('status', true)->orderBy('id', 'ASC')->get();
+        }
+
+        // Menu footer: fallback ke header_menu kalau footer_menu kosong
+        $menu = [];
+        if (class_exists(Menu::class) && Schema::hasTable('menus')) {
+            $row = Menu::query()->first();
+            $raw = $row?->footer_menu ?? $row?->header_menu ?? null;
+
+            if (is_string($raw)) {
+                $decoded = json_decode($raw, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $menu = array_values($decoded);
+                }
+            } elseif (is_array($raw)) {
+                $menu = array_values($raw);
+            }
+        }
+
+        return view('components.frontend.footer', compact('sitesettings', 'socialmedia', 'menu'));
     }
 }

@@ -1,11 +1,12 @@
 @extends("frontend.master")
 
-@section("title", config('app.sitesettings')::first()->site_title." - ".config('app.sitesettings')::first()->tagline)
+@section('title', ($settings?->site_title ?? config('app.name')) . ' - ' . ($settings?->tagline ?? ''))
+
 
 @section("content")
 
-@include("frontend.home.inc.featuredpost")
-@include("frontend.home.inc.category")
+@include('frontend.home.inc.featuredpost')
+@include('frontend.home.inc.category')
 
 
 <section class="section-feature-1">
