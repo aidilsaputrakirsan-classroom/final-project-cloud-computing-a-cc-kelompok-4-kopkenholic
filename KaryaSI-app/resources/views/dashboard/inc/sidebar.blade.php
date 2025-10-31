@@ -1,7 +1,18 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="{{ route("dashboard.home") }}" class="brand-link">
-        <span class="brand-text font-weight-bold px-2">{{ config('app.sitesettings')::first()->site_title }}</span>
+    <a href="{{ route('dashboard.home') }}" class="brand-link">
+        @php
+            use Illuminate\Support\Facades\Schema;
+
+            // Ambil judul situs dari SiteSetting jika ada; fallback ke APP_NAME
+            $siteTitleSidebar = (class_exists(\App\Models\SiteSetting::class) && Schema::hasTable('site_settings'))
+                ? optional(\App\Models\SiteSetting::select('site_title')->first())->site_title
+                : null;
+
+            $siteTitleSidebar = $siteTitleSidebar ?? ($siteTitle ?? config('app.name', 'KaryaSI App'));
+        @endphp
+        <span class="brand-text font-weight-bold px-2">{{ $siteTitleSidebar }}</span>
     </a>
+
     <div class="sidebar">
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
