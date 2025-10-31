@@ -12,11 +12,6 @@
                     <div class="collapse navbar-collapse" id="main_nav">
                         @if (count($menu) > 0)
                         <ul class="navbar-nav">
-                            @foreach ($menu as $item)
-                            <li class="nav-item">
-                               <a class="nav-link{{ request()->url() == url($item['url']) ? ' active' : '' }}" href="{{ $item['url'] }}">{{ $item['title'] }}</a>
-                            </li>
-                            @endforeach
                         </ul>
                         @endif
                     </div>
