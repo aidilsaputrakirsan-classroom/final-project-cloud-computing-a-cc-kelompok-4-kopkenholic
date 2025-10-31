@@ -14,7 +14,7 @@
                         <ul class="navbar-nav">
                             @foreach ($menu as $item)
                             <li class="nav-item">
-                                <a class="nav-link{{ request()->url() == $item["href"] ? " active" : "" }}" href="{{ $item["href"] }}">{{ $item["text"] }}</a>
+                               <a class="nav-link{{ request()->url() == url($item['url']) ? ' active' : '' }}" href="{{ $item['url'] }}">{{ $item['title'] }}</a>
                             </li>
                             @endforeach
                         </ul>
