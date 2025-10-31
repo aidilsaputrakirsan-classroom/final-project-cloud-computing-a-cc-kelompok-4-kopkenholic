@@ -1,27 +1,4 @@
 <div class="footer">
-  <div class="footer-area">
-    <div class="footer-area-content">
-      <div class="container">
-        <div class="row">
-          @php
-            $hasMenu = !empty($menu) && is_iterable($menu) && count($menu) > 0;
-            $site    = $sitesettings ?? null;
-          @endphp
-
-          @if ($hasMenu)
-            <div class="col-md-3">
-              <div class="menu">
-                <h6>Menu</h6>
-                <ul>
-                  @foreach ($menu as $item)
-                    @php
-                      $href  = $item['href']  ?? $item['url']  ?? '#';
-                      $label = $item['label'] ?? $item['text'] ?? 'Menu';
-                    @endphp
-                    <li><a href="{{ url($href) }}">{{ $label }}</a></li>
-                  @endforeach
-                </ul>
-              </div>
             </div>
           @endif
 
