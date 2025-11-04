@@ -6,16 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable(); // opsional: nama menu
-            $table->json('header_menu')->nullable(); // isi menu dalam bentuk JSON
+            $table->json("header_menu");
+            $table->json("footer_menu");
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('menus');
