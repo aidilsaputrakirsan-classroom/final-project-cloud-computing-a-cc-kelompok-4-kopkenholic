@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class AuthMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,9 +16,13 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->role == 3) {
+        if (Auth::check() && !Auth::user()->status) {
+            Auth::logout();
+            return redirect()->route("auth.login")->withErrors("Your account is currently inactive!");
+        }
+        if (Auth::check() && Auth::user()->status) {
             return $next($request);
         }
-        return abort(404);
+        return redirect()->route("auth.login");
     }
 }
