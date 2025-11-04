@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('social_media', function (Blueprint $table) {
             $table->id();
+            $table->string("title");
+            $table->string("icon");
+            $table->string("link");
+            $table->string("color");
+            $table->boolean("status")->default(true);
             $table->timestamps();
         });
     }
@@ -22,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('social_media');
     }
 };

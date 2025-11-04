@@ -7,26 +7,26 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Jalankan migrasi.
+     * Run the migrations.
      */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'username')) {
-                $table->string('username')->unique()->nullable()->after('name');
-            }
+            $table->string("facebook")->nullable()->default(null);
+            $table->string("twitter")->nullable()->default(null);
+            $table->string("instagram")->nullable()->default(null);
+            $table->string("linkedin")->nullable()->default(null);
+            $table->string("youtube")->nullable()->default(null);
         });
     }
 
     /**
-     * Batalkan migrasi.
+     * Reverse the migrations.
      */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            if (Schema::hasColumn('users', 'username')) {
-                $table->dropColumn('username');
-            }
+            //
         });
     }
 };
