@@ -168,22 +168,28 @@ class PostController extends Controller
     }
 
 
-    public function trashed() {
-        if (Auth::user()->role == 3) {
-            $posts = Post::onlyTrashed()->with(["category" => function($q) {
-                $q->withTrashed();
-            }, "tags", "user"])->withCount(["comments" => function($q) {
-                $q->withTrashed();
-            }])->orderBy("id", "DESC")->paginate(20);
-        } else {
-            $posts = Post::onlyTrashed()->with(["category" => function($q) {
-                $q->withTrashed();
-            }, "tags", "user"])->withCount(["comments" => function($q) {
-                $q->withTrashed();
-            }])->orderBy("id", "DESC")->where("user_id", Auth::id())->paginate(20);
-        }
-        return view("dashboard.post.trashed", compact("posts"));
+    public function trashed()
+{
+    if (Auth::user()->role == 3) {
+        // Admin (role 3): lihat semua post yang dihapus
+        $posts = Post::onlyTrashed()
+            ->with(['category', 'tags', 'user']) // Hapus withTrashed() di relasi
+            ->withCount('comments')              // Hapus withTrashed() di komentar juga
+            ->orderBy('id', 'DESC')
+            ->paginate(20);
+    } else {
+        // User biasa: hanya lihat post miliknya yang dihapus
+        $posts = Post::onlyTrashed()
+            ->with(['category', 'tags', 'user'])
+            ->withCount('comments')
+            ->where('user_id', Auth::id())
+            ->orderBy('id', 'DESC')
+            ->paginate(20);
     }
+
+    return view('dashboard.post.trashed', compact('posts'));
+}
+
 
     public function restore($id) {
         $post = Post::onlyTrashed()->find($id);
