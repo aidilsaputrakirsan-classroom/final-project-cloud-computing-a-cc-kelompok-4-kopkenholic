@@ -32,7 +32,7 @@
                         <a href="{{ route("dashboard.posts.index") }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
-                <div class="col-lg-3 col-6">
+                <!-- <div class="col-lg-3 col-6">
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ $comments }}</h3>
@@ -43,7 +43,7 @@
                         </div>
                         <a href="{{ route("dashboard.comments.index") }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
-                </div>
+                </div> -->
                 <div class="col-lg-3 col-6">
                     <div class="small-box bg-warning">
                         <div class="inner">
