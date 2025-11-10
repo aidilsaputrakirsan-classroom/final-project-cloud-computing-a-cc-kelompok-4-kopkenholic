@@ -154,6 +154,32 @@
                         </li>
                     </ul>
                 </li>
+
+                {{-- CONTACT MESSAGES --}}
+<li class="nav-item {{ in_array(request()->route()->getName(), [
+    'dashboard.contact.index'
+]) ? 'menu-open' : '' }}">
+    <a href="#" class="nav-link {{ in_array(request()->route()->getName(), [
+        'dashboard.contact.index'
+    ]) ? 'active' : '' }}">
+        <i class="nav-icon fas fa-envelope"></i>
+        <p>
+            Messages
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('dashboard.contact.index') }}" 
+               class="nav-link {{ request()->route()->getName() == 'dashboard.contact.index' ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Inbox</p>
+            </a>
+        </li>
+    </ul>
+</li>
+
                 <!-- <li class="nav-item {{ in_array(request()->route()->getName(), ["dashboard.pages.index", "dashboard.pages.create", "dashboard.pages.edit", "dashboard.pages.trashed"]) ? "menu-open" : "" }}">
                     <a href="#" class="nav-link {{ in_array(request()->route()->getName(), ["dashboard.pages.index", "dashboard.pages.create", "dashboard.pages.edit", "dashboard.pages.trashed"]) ? "active" : "" }}">
                         <i class="nav-icon fas fa-copy"></i>

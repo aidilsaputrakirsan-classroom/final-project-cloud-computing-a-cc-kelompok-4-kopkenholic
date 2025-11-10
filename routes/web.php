@@ -23,6 +23,8 @@ use App\Http\Controllers\Frontend\PostController;
 use App\Http\Controllers\Frontend\SearchController;
 use App\Http\Controllers\Frontend\TagController;
 use App\Http\Controllers\Frontend\UserController;
+use App\Http\Controllers\Frontend\ContactController;
+use App\Http\Controllers\Dashboard\ContactMessageController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('frontend.')->group(function () {
@@ -35,6 +37,8 @@ Route::name('frontend.')->group(function () {
     Route::get('/user/{username}', [UserController::class, 'index'])->name('user');
     Route::get('/tag/{name}', [TagController::class, 'index'])->name('tag');
     Route::get('/page/{slug}', [PageController::class, 'index'])->name('page');
+    Route::get('/contact-us', [ContactController::class, 'index'])->name('contact');
+    Route::post('/contact-us', [ContactController::class, 'store'])->name('contact.store');
 });
 
 Route::name('auth.')->group(function () {
@@ -151,4 +155,15 @@ Route::name('dashboard.')->prefix('/dashboard')->middleware(['auth'])->group(fun
             Route::get('/menus/footer', [MenuController::class, 'footer'])->name('menus.footer');
             Route::post('/menus/footer', [MenuController::class, 'footerUpdate'])->name('menus.footer.update');
         });
+
+    // contact messages (ADMIN)  // <-- TAMBAHAN
+    Route::prefix('/contact-messages')
+        ->name('contact.')
+        ->controller(ContactMessageController::class)
+        ->middleware([\App\Http\Middleware\AdminMiddleware::class])
+        ->group(function () {
+            Route::get('/', 'index')->name('index');          // daftar pesan masuk
+            Route::delete('/{id}', 'destroy')->name('destroy'); // hapus pesan
+        });
+
 });
