@@ -70,16 +70,25 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="tags">Tags</label>
-                                            <div class="select2-purple">
-                                                <select multiple="multiple" data-placeholder="Select tag" data-dropdown-css-class="select2-purple" class="form-control" name="tags[]" id="tags" style="width: 100%;">
-                                                    @foreach ($tags as $tag)
-                                                    <option value="{{ $tag->name }}">{{ $tag->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
+              <div class="form-group">
+  <label for="tags" class="font-weight-semibold">Tags</label>
+  <select
+    id="tags"
+    name="tags[]"
+    class="form-control form-control-lg select2bs4"
+    multiple="multiple"
+    data-placeholder="Tambahkan atau pilih tag..."
+    style="width: 100%; border: 1px solid #ced4da; border-radius: .25rem;">
+      @foreach ($tags as $tag)
+        <option value="{{ $tag->name }}">{{ $tag->name }}</option>
+      @endforeach
+  </select>
+  <small class="text-muted">
+    Tekan <b>Enter</b> atau <b>Koma (,)</b> untuk menambah tag baru.
+  </small>
+</div>
+
+
                                         <div class="form-group">
                                             <label for="thumbnail">Thumbnail</label>
                                             <input type="file" class="form-control" id="thumbnail" name="thumbnail" accept="image/*"/>
@@ -140,9 +149,14 @@
             theme: 'bootstrap4'
         });
 
-        $('#tags').select2({
-            tags: true,
-        });
+      $('#tags').select2({
+    tags: true,
+    tokenSeparators: [','],
+    width: '100%',
+    theme: 'bootstrap4',
+    dropdownParent: $('#tags').closest('.form-group')
+});
+
         $("#content").summernote({
             placeholder: 'Write content...',
             height: 170,
@@ -169,4 +183,44 @@
         });
     });
 </script>
+<script>
+(function () {
+  function initTags() {
+    if (!window.jQuery) return console.error('jQuery not found');
+    if (!$.fn.select2) {
+      // Load Select2 dari CDN bila plugin lokal gagal
+      var css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css';
+      document.head.appendChild(css);
+
+      var css2 = document.createElement('link');
+      css2.rel = 'stylesheet';
+      css2.href = 'https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.6.2/dist/select2-bootstrap4.min.css';
+      document.head.appendChild(css2);
+
+      var js = document.createElement('script');
+      js.src = 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js';
+      js.onload = initTags; // init setelah CDN selesai
+      document.head.appendChild(js);
+      return;
+    }
+    var $el = $('#tags');
+    if (!$el.length) return console.error('#tags element not found');
+
+    $el.select2({
+      tags: true,
+      tokenSeparators: [',', ';'],
+      width: '100%',
+      theme: 'bootstrap4',
+      dropdownParent: $el.closest('.form-group'),
+      placeholder: 'Select tag'
+    });
+    console.log('Select2 ready on #tags');
+  }
+  document.addEventListener('DOMContentLoaded', initTags);
+})();
+</script>
+
 @endsection
+
