@@ -1,5 +1,5 @@
 @extends('dashboard.master')
-@section('title', 'Trashed Posts')
+@section('title', 'Trashed Categories - ' . config('app.name'))
 
 @section('content')
 <div class="content-wrapper">
@@ -7,13 +7,13 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Trashed Posts</h1>
+                    <h1 class="m-0">Trashed Categories</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard.home') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route("dashboard.posts.index") }}">All Posts</a></li>
-                        <li class="breadcrumb-item active">Trashed Posts</li>
+                        <li class="breadcrumb-item"><a href="{{ route("dashboard.categories.index") }}">All Categories</a></li>
+                        <li class="breadcrumb-item active">Trashed Categories</li>
                     </ol>
                 </div>
             </div>
@@ -25,7 +25,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Trashed Posts</h3>
+                            <h3 class="card-title">Trashed Categories</h3>
                         </div>
                         <div class="card-body">
                             @if ($errors->any())
@@ -49,59 +49,37 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center">#</th>
+                                            <th class="text-center">Image</th>
                                             <th class="text-center">Title</th>
-                                            <th class="text-center">Author</th>
-                                            <th class="text-center">Category</th>
-                                            <th class="text-center">Tags</th>
+                                            <th class="text-center">Total Posts</th>
                                             <th class="text-center">Status</th>
-                                            <th class="text-center">Featured</th>
-                                            <th class="text-center">Comment Status</th>
-                                            <th class="text-center">Views</th>
-                                            <th class="text-center">Comment Count</th>
                                             <th class="text-center">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($posts as $post)
+                                        @forelse ($categories as $category)
                                         <tr>
-                                            <td class="text-center">{{ $loop->index + $posts->firstItem() }}</td>
-                                            <td>{{ $post->title }}</td>
-                                            <td class="text-center">{{ $post->user->name }}</td>
-                                            <td class="text-center">{{ $post->category?->title ?? 'No category' }}</td>
+                                            <td class="text-center">{{ $loop->index + $categories->firstItem() }}</td>
                                             <td class="text-center">
-                                                @forelse ($post->tags as $tag)
-                                                <span class="badge bg-primary">{{ $tag->name }}</span>
-                                                @empty
-                                                <span class="badge bg-danger">Empty</span>
-                                                @endforelse
+                                                <img width="100px" height="100px" src="{{ asset("uploads/category/".($category->image ?? "default.webp")) }}" alt="{{ $category->title }}"/>
                                             </td>
-                                            <td class="text-center"><span class="badge bg-{{ $post->status ? "success" : "danger" }}">{{ $post->status ? "Published" : "Draft" }}</span></td>
-                                            <td class="text-center"><span class="badge bg-{{ $post->is_featured ? "success" : "danger" }}">{{ $post->is_featured ? "Yes" : "No" }}</span></td>
-                                            <td class="text-center"><span class="badge bg-{{ $post->enable_comment ? "success" : "danger" }}">{{ $post->enable_comment ? "Enable" : "Disable" }}</span></td>
-                                            <td class="text-center">{{ $post->views }}</td>
-                                            <td class="text-center">{{ $post->comments_count }}</td>
+                                            <td class="text-center">{{ $category->title }}</td>
+                                            <td class="text-center">{{ $category->posts_count }}</td>
+                                            <td class="text-center"><span class="badge bg-{{ $category->status ? "success" : "warning" }}">{{ $category->status ? "Active" : "Inactive" }}</span></td>
                                             <td class="text-center">
-  <div class="d-flex justify-content-center gap-2">
-    {{-- RESTORE (PATCH) --}}
-    <form action="{{ route('dashboard.posts.restore', $post->id) }}" method="POST" class="mr-1 d-inline">
-      @csrf
-      @method('PATCH')
-      <button type="submit" class="btn btn-success btn-sm">Restore</button>
-    </form>
-
-    {{-- HAPUS PERMANEN (DELETE) --}}
-    <form action="{{ route('dashboard.posts.force-delete', $post->id) }}" method="POST" class="d-inline">
-      @csrf
-      @method('DELETE')
-      <button type="submit" class="btn btn-danger btn-sm deletebtn">Delete</button>
-    </form>
-  </div>
-</td>
-
+                                                <div class="d-flex justify-content-center">
+                                                    <a href="{{ route("dashboard.categories.restore", $category->id) }}" class="btn btn-success">Restore</a>
+                                                    <form action="{{ route("dashboard.categories.delete", $category->id) }}" method="POST">
+                                                        @method("DELETE")
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-danger deletebtn">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </td>
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="11" class="text-center">No post found!</td>
+                                            <td colspan="6" class="text-center">No category found!</td>
                                         </tr>
                                         @endforelse
                                     </tbody>
@@ -110,7 +88,7 @@
                         </div>
                         <div class="card-footer clearfix">
                             <ul class="pagination pagination-sm m-0 float-right">
-                            {{ $posts->links() }}
+                            {{ $categories->links() }}
                             </ul>
                         </div>
                     </div>
@@ -131,7 +109,7 @@ $('.deletebtn').on('click',function(e){
         title: 'Are you sure?',
         type: 'warning',
         icon: 'warning',
-        text: "You won't be able to revert this!",
+        text: 'All posts of this category will delete!',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
