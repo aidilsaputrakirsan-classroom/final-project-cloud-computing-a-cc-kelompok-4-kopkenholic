@@ -60,12 +60,17 @@
                                             <td class="text-center text-capitalize">{{ $tag->name }}</td>
                                             <td class="text-center">{{ $tag->posts_count }}</td><td class="text-center">
                                                 <div class="d-flex justify-content-center">
-                                                    <a target="_blank" href="{{ route("frontend.tag", $str::slug($tag->name)) }}" class="btn btn-success">View</a>
-                                                    <form action="{{ route("dashboard.tags.destroy", $tag->id) }}" method="POST">
-                                                        @method("DELETE")
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-danger deletebtn">Delete</button>
-                                                    </form>
+                                                    <a target="_blank" href="{{ route("frontend.tag", $str::slug($tag->name)) }}" class="btn btn-success btn-sm">View</a>
+                                                   <form id="del-tag-{{ $tag->id }}"
+                                                        action="{{ route('dashboard.tags.destroy', $tag->id) }}"
+                                                        method="POST"
+                                                        class="d-inline"
+                                                        onsubmit="return confirm('Yakin hapus tag ini? Tag akan dilepas dari semua post.');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+</form>
+
                                                 </div>
                                             </td>
                                         </tr>

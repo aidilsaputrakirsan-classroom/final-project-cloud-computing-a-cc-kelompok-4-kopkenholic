@@ -79,13 +79,18 @@
                                             <td class="text-center"><a href="{{ route("dashboard.users.status", $user->id) }}"><span class="badge bg-{{ $user->status ? "success" : "danger" }}">{{ $user->status ? "Active" : "Inactive" }}</span></a></td>
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center">
-                                                    <a target="_blank" href="{{ $user->status ? route("frontend.user", $user->username) : "" }}" class="btn btn-success {{ $user->status ? "" : " disabled" }}">View</a>
-                                                    <a href="{{ route("dashboard.users.edit", $user->id) }}" class="btn btn-warning">Edit</a>
-                                                    <form action="{{ route("dashboard.users.destroy", $user->id) }}" method="POST">
-                                                        @method("DELETE")
+                                                    <a target="_blank" href="{{ $user->status ? route("frontend.user", $user->username) : "" }}" class="btn btn-success btn-sm {{ $user->status ? "" : " disabled" }}">View</a>
+                                                    <a href="{{ route("dashboard.users.edit", $user->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                                   <form id="del-user-{{ $user->id }}"
+                                                        action="{{ route('dashboard.users.destroy', $user->id) }}"
+                                                        method="POST"
+                                                        class="d-inline"
+                                                        onsubmit="return confirm('Yakin hapus user ini? Semua postingan dan datanya akan dihapus.');">
                                                         @csrf
-                                                        <button type="submit" class="btn btn-danger deletebtn">Delete</button>
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                                     </form>
+
                                                 </div>
                                             </td>
                                         </tr>

@@ -114,10 +114,14 @@
                                             <td class="text-center"><a href="{{ route("dashboard.settings.social.media.status", $media->id) }}"><span class="badge bg-{{ $media->status ? "success" : "warning" }}">{{ $media->status ? "Active" : "Inactive" }}</span></a></td>
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center">
-                                                    <form action="{{ route("dashboard.settings.social.media.delete", $media->id) }}" method="POST">
-                                                        @method("DELETE")
+                                                    <form id="del-social-{{ $media->id }}"
+                                                        action="{{ route('dashboard.settings.social.media.delete', $media->id) }}"
+                                                        method="POST"
+                                                        class="d-inline"
+                                                        onsubmit="return confirm('Yakin ingin menghapus akun media sosial ini?');">
                                                         @csrf
-                                                        <button type="submit" class="btn btn-danger deletebtn">Delete</button>
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                                     </form>
                                                 </div>
                                             </td>

@@ -81,13 +81,18 @@
                                             <td class="text-center">{{ $post->comments_count }}</td>
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center">
-                                                    <a target="_blank" href="{{ $post->status ? route("frontend.post", $post->slug) : "" }}" class="btn btn-success {{ $post->status ? "" : " disabled" }}">View</a>
-                                                    <a href="{{ route("dashboard.posts.edit", $post->id) }}" class="btn btn-warning">Edit</a>
-                                                    <form action="{{ route("dashboard.posts.destroy", $post->id) }}" method="POST">
-                                                        @method("DELETE")
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-danger deletebtn">Delete</button>
+                                                    <a target="_blank" href="{{ $post->status ? route("frontend.post", $post->slug) : "" }}" class="btn btn-success btn-sm {{ $post->status ? "" : " disabled" }}">View</a>
+                                                    <a href="{{ route("dashboard.posts.edit", $post->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                                    <form id="del-{{ $post->id }}"
+                                                        action="{{ route('dashboard.posts.destroy', $post->id) }}"
+                                                        method="POST"
+                                                        class="d-inline"
+                                                        onsubmit="return confirm('Yakin hapus post ini? Semua komentarnya juga akan terhapus.');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                                     </form>
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -113,26 +118,3 @@
 </div>
 @endsection
 
-@section("script")
-<script src="{{ asset("assets/dashboard/plugins/sweetalert2/sweetalert2.all.js") }}"></script>
-<script>
-$('.deletebtn').on('click',function(e){
-    e.preventDefault();
-    var form = $(this).parents('form');
-    Swal.fire({
-        title: 'Are you sure?',
-        type: 'warning',
-        icon: 'warning',
-        text: 'All comments of this post will delete!',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.value) {
-            form.submit();
-        }
-    });
-});
-</script>
-@endsection
