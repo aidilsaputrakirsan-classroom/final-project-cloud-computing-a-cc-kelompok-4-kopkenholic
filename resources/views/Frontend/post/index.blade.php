@@ -36,7 +36,7 @@
                             </ul>
                         </div>
                         @endif
-                        <div class="social-media">
+                        <!-- <div class="social-media">
                             <p>Share on :</p>
                             <ul class="list-inline">
                                 <li>
@@ -55,10 +55,10 @@
                                     <a href="{{ request()->url() }}"><i class="fab fa-pinterest"></i></a>
                                 </li>
                             </ul>
-                        </div>
+                        </div> -->
                     </div>
                     @include("frontend.post.inc.author")
-                    @include("frontend.post.inc.comment")
+                    <!-- @include("frontend.post.inc.comment") -->
                 </div>
             </div>
         </div>

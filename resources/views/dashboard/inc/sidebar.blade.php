@@ -234,13 +234,13 @@
                                 <p>Site Settings</p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="{{ route("dashboard.settings.social.media") }}" class="nav-link {{ request()->route()->getName() == "dashboard.settings.social.media" ? "active" : "" }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Social Media</p>
                             </a>
-                        </li>
-                        <li class="nav-item {{ in_array(request()->route()->getName(), ["dashboard.settings.menus.header", "dashboard.settings.menus.footer"]) ? "menu-open" : "" }}">
+                        </li> -->
+                        <!-- <li class="nav-item {{ in_array(request()->route()->getName(), ["dashboard.settings.menus.header", "dashboard.settings.menus.footer"]) ? "menu-open" : "" }}">
                             <a href="#" class="nav-link {{ in_array(request()->route()->getName(), ["dashboard.settings.menus.header", "dashboard.settings.menus.footer"]) ? "active" : "" }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>
@@ -262,7 +262,7 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> -->
                         @endif
                     </ul>
                 </li>
