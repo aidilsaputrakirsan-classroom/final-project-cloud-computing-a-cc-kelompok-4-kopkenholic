@@ -67,13 +67,19 @@
                                             <td class="text-center"><a href="{{ route("dashboard.categories.status", $category->id) }}"><span class="badge bg-{{ $category->status ? "success" : "warning" }}">{{ $category->status ? "Active" : "Inactive" }}</span></a></td>
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center">
-                                                    <a target="_blank" href="{{ $category->status ? route("frontend.category", $category->slug) : "" }}" class="btn btn-success {{ $category->status ? "" : " disabled" }}">View</a>
-                                                    <a href="{{ route("dashboard.categories.edit", $category->id) }}" class="btn btn-warning">Edit</a>
-                                                    <form action="{{ route("dashboard.categories.destroy", $category->id) }}" method="POST">
-                                                        @method("DELETE")
+                                                    <a target="_blank" href="{{ $category->status ? route("frontend.category", $category->slug) : "" }}" class="btn btn-success btn-sm {{ $category->status ? "" : " disabled" }}">View</a>
+                                                    <a href="{{ route("dashboard.categories.edit", $category->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                                  <form id="del-category-{{ $category->id }}"
+                                                        action="{{ route('dashboard.categories.destroy', $category->id) }}"
+                                                        method="POST"
+                                                        class="d-inline"
+                                                        onsubmit="return confirm('Yakin hapus kategori ini? Semua post yang terkait akan terhapus atau dipindahkan.');">
                                                         @csrf
-                                                        <button type="submit" class="btn btn-danger deletebtn">Delete</button>
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                                     </form>
+
+
                                                 </div>
                                             </td>
                                         </tr>
