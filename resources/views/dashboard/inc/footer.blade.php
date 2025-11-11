@@ -29,10 +29,10 @@
                     @endif
 
                     {{-- ===== Logo + Deskripsi (fallback aman) ===== --}}
-                    @php
+                    <!-- @php
                         $site        = $sitesettings ?? null;
                         $siteTitle   = optional($site)->site_title ?? config('app.name', 'KaryaSI App');
-                        $logoDark    = optional($site)->logo_dark ?: 'default-dark.png';
+                        $logoDark    = optional($site)->logo_dark ?: 'logo_light.png';
                         $description = trim(optional($site)->description ?? '');
                     @endphp
 
@@ -42,7 +42,7 @@
                         @if ($description !== '')
                             <p class="text-white text-justify mt-2">{{ $description }}</p>
                         @endif
-                    </div>
+                    </div> -->
 
                     {{-- ===== Social media (aman walau $socialmedia tidak ada) ===== --}}
                     @php
