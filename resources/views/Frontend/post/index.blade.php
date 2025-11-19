@@ -58,7 +58,7 @@
                         </div> -->
                     </div>
                     @include("frontend.post.inc.author")
-                    <!-- @include("frontend.post.inc.comment") -->
+                    @include("frontend.post.inc.comment")
                 </div>
             </div>
         </div>
