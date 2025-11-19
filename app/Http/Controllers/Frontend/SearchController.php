@@ -8,12 +8,25 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-    public function index(Request $request) {
-        if ($request->q) {
-            $query = $request->q;
-            $posts = Post::with("category")->whereStatus(true)->where("title", "LIKE", "%{$query}%")->orWhere("title", "LIKE", "%{$query}%")->orderBy("id", "DESC")->paginate(10);
-            return view("frontend.search.index", compact("posts", "query"));
+    public function index(Request $request)
+    {
+        // jika tidak ada query, kembali ke home
+        if (!$request->q) {
+            return redirect()->route('frontend.home');
         }
-        return redirect()->route("frontend.home");
+
+        $query = $request->q;
+
+        $posts = Post::with('category')
+            ->where('status', true)                // hanya post yang aktif
+            ->where(function ($q) use ($query) {   // kelompokkan kondisi pencarian
+                $q->where('title', 'LIKE', "%{$query}%")
+                  ->orWhere('content', 'LIKE', "%{$query}%");
+            })
+            ->orderBy('id', 'DESC')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('frontend.search.index', compact('posts', 'query'));
     }
 }
