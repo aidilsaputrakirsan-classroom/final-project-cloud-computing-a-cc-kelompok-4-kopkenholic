@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - development
 
 jobs:
   deploy:
@@ -17,7 +18,7 @@ jobs:
 
       - name: 📁 Buat file ZIP untuk deploy
         run: |
-          zip -r deploy.zip . -x ".git*" -x ".github*" -x "node_modules/*"
+          zip -r deploy.zip . -x g".git*" -x ".github*" -x "node_modules/*"
 
       - name: 🚀 Upload ke STB Server
         id: deploy
