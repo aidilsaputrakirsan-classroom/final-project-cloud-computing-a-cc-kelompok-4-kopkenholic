@@ -1,14 +1,36 @@
 <div class="post-single-author">
     <div class="authors-info">
+
+        @php
+            $author = optional($post->user);
+            $authorName = $author->name ?? 'Unknown Author';
+            $authorUsername = $author->username;
+            $authorProfile = $author->profile ?? 'default.webp';
+        @endphp
+
         <div class="image">
-            <a href="{{ route("frontend.user", $post->user->username) }}" class="image">
-                <img src="{{ asset("uploads/author/".($post->user->profile ?? "default.webp")) }}" alt="{{ $post->user->name }}"/>
-            </a>
+            @if($authorUsername)
+                <a href="{{ route('frontend.user', $authorUsername) }}" class="image">
+                    <img src="{{ asset('uploads/author/'.$authorProfile) }}" alt="{{ $authorName }}"/>
+                </a>
+            @else
+                <span class="image">
+                    <img src="{{ asset('uploads/author/'.$authorProfile) }}" alt="{{ $authorName }}"/>
+                </span>
+            @endif
         </div>
+
         <div class="content">
-            <a href="{{ route("frontend.user", $post->user->username) }}"><h4>{{ $post->user->name }}</h4></a>
-            @if ($post->user->about)
-            <p>{{ $post->user->about }}</p>
+            @if($authorUsername)
+                <a href="{{ route('frontend.user', $authorUsername) }}">
+                    <h4>{{ $authorName }}</h4>
+                </a>
+            @else
+                <h4>{{ $authorName }}</h4>
+            @endif
+
+            @if ($author->about)
+            <p>{{ $author->about }}</p>
             @endif
             <!-- <div class="social-media">
                 <ul class="list-inline">

@@ -57,7 +57,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item {{ in_array(request()->route()->getName(), ["dashboard.media.index", "dashboard.media.create"]) ? "menu-open" : "" }}">
+                <!-- <li class="nav-item {{ in_array(request()->route()->getName(), ["dashboard.media.index", "dashboard.media.create"]) ? "menu-open" : "" }}">
                     <a href="#" class="nav-link {{ in_array(request()->route()->getName(), ["dashboard.media.index", "dashboard.media.create"]) ? "active" : "" }}">
                         <i class="nav-icon fas fa-image"></i>
                         <p>Media<i class="right fas fa-angle-left"></i>
@@ -77,7 +77,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
                 <li class="nav-item {{ in_array(request()->route()->getName(), ["dashboard.comments.index", "dashboard.comments.create","dashboard.comments.edit", "dashboard.comments.trashed"]) ? "menu-open" : "" }}">
                     <a href="#" class="nav-link {{ in_array(request()->route()->getName(), ["dashboard.comments.index", "dashboard.comments.create", "dashboard.comments.edit", "dashboard.comments.trashed"]) ? "active" : "" }}">
                         <i class="nav-icon fas fa-comment-alt"></i>

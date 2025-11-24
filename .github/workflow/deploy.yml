@@ -1,0 +1,211 @@
+name: 🐾 Kucingarong Quick Deploy v7.0
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      subdomain:
+        description: 'Subdomain name (optional - defaults to repo name)'
+        required: false
+        type: string
+      force_full:
+        description: 'Force full deployment'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+    # =======================================================
+    # 📥 Checkout Repository
+    # =======================================================
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # =======================================================
+    # ⚙️ Setup Environment
+    # =======================================================
+    - name: 🔧 Setup Environment
+      id: setup
+      run: |
+        REPO_NAME="${GITHUB_REPOSITORY##*/}"
+        SUBDOMAIN="${{ github.event.inputs.subdomain }}"
+        if [ -z "$SUBDOMAIN" ]; then
+          SUBDOMAIN="$REPO_NAME"
+        fi
+        echo "repo_name=$REPO_NAME" >> $GITHUB_OUTPUT
+        echo "subdomain=$SUBDOMAIN" >> $GITHUB_OUTPUT
+        echo "📦 Repository: $REPO_NAME"
+        echo "🌐 Subdomain: $SUBDOMAIN"
+
+    # =======================================================
+    # 🔍 Detect Changes (Smart Deploy)
+    # =======================================================
+    - name: 🔍 Detect Changed Files
+      id: changes
+      run: |
+        FORCE_FULL="${{ github.event.inputs.force_full }}"
+        if [ "$FORCE_FULL" = "true" ]; then
+          echo "mode=full" >> $GITHUB_OUTPUT
+          echo "📦 Mode: Full (forced)"
+        elif [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ -z "${{ github.event.before }}" ]; then
+          echo "mode=full" >> $GITHUB_OUTPUT
+          echo "📦 Mode: Full (manual/initial)"
+        else
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} || echo "")
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "mode=full" >> $GITHUB_OUTPUT
+            echo "📦 Mode: Full (no changes)"
+          else
+            CRITICAL_CHANGED=$(echo "$CHANGED_FILES" | grep -E "(composer\.(json|lock)|artisan|\.env\.example|database/|config/)" || true)
+            if [ -n "$CRITICAL_CHANGED" ]; then
+              echo "mode=full" >> $GITHUB_OUTPUT
+              echo "📦 Mode: Full (critical files changed)"
+            else
+              echo "mode=incremental" >> $GITHUB_OUTPUT
+              echo "📦 Mode: Incremental ($(echo "$CHANGED_FILES" | wc -l) files)"
+            fi
+          fi
+        fi
+
+    # =======================================================
+    # 📦 Create ZIP Package
+    # =======================================================
+    - name: 📦 Create Package
+      run: |
+        MODE="${{ steps.changes.outputs.mode }}"
+        echo "📦 Creating deployment package..."
+        
+        # Always include critical files for proper deployment
+        zip -r deploy.zip . \
+          -x "*.git*" \
+          -x "node_modules/*" \
+          -x "vendor/*" \
+          -x "*.github/*" \
+          -x "storage/logs/*" \
+          -x ".env" \
+          -x "*.log" \
+          -x "tests/*" \
+          -x ".DS_Store"
+        
+        SIZE=$(du -h deploy.zip | cut -f1)
+        echo "✅ Package created: $SIZE"
+
+    # =======================================================
+    # 🚀 Quick Upload (No Processing on GitHub Side)
+    # =======================================================
+    - name: 🚀 Quick Upload to Server
+      id: upload
+      run: |
+        MODE="${{ steps.changes.outputs.mode }}"
+        echo "🌐 Uploading to server..."
+        
+        RESPONSE=$(curl -s -S -w "\n%{http_code}" -X POST \
+          --max-time 15 \
+          --connect-timeout 10 \
+          -F "file=@deploy.zip" \
+          -F "repo=${{ steps.setup.outputs.repo_name }}" \
+          -F "subdomain=${{ steps.setup.outputs.subdomain }}" \
+          -F "mode=$MODE" \
+          -F "commit_sha=${{ github.sha }}" \
+          "https://deploy.akhzafachrozy.my.id/")
+        
+        HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+        BODY=$(echo "$RESPONSE" | head -n-1)
+        
+        echo "📡 Response Code: $HTTP_CODE"
+        
+        if [ "$HTTP_CODE" -eq 200 ]; then
+          echo "✅ Upload successful!"
+          # Compact JSON for output (remove newlines and spaces)
+          COMPACT_JSON=$(echo "$BODY" | jq -c '.')
+          echo "response<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMPACT_JSON" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "Response: $COMPACT_JSON"
+        else
+          echo "❌ Upload failed with code $HTTP_CODE"
+          echo "$BODY"
+          exit 1
+        fi
+
+    # =======================================================
+    # 🧾 Parse Response
+    # =======================================================
+    - name: 🧠 Extract Details
+      id: parse
+      run: |
+        RESPONSE='${{ steps.upload.outputs.response }}'
+        PORT=$(echo "$RESPONSE" | jq -r '.port // 0')
+        STATUS=$(echo "$RESPONSE" | jq -r '.status // "unknown"')
+        
+        echo "port=$PORT" >> $GITHUB_OUTPUT
+        echo "status=$STATUS" >> $GITHUB_OUTPUT
+        
+        echo "✅ Status: $STATUS"
+        echo "✅ Port: $PORT"
+
+    # =======================================================
+    # ✅ Summary
+    # =======================================================
+    - name: 📝 Deployment Summary
+      if: always()
+      run: |
+        MODE="${{ steps.changes.outputs.mode }}"
+        PORT="${{ steps.parse.outputs.port }}"
+        REPO="${{ steps.setup.outputs.repo_name }}"
+        SERVER_IP="${{ secrets.SERVER_IP }}"
+        
+        cat >> $GITHUB_STEP_SUMMARY << EOF
+        ## 🐾 Kucingarong Quick Deploy
+        
+        ### ✅ Upload Completed
+        - **Repository**: \`$REPO\`
+        - **Mode**: \`$MODE\`
+        - **Port**: \`$PORT\`
+        - **Status**: Files uploaded successfully
+        
+        ### ⏳ Background Processing
+        Server is now processing:
+        1. 🔧 Installing dependencies (composer)
+        2. ⚙️ Setting up Laravel environment
+        3. 🔑 Generating app keys
+        4. 🗄️ Running migrations
+        5. 🚀 Starting Laravel service
+        
+        **Estimated time**: 3-5 minutes
+        
+        ### 🔗 Access URL
+        EOF
+        
+        if [ -n "$SERVER_IP" ] && [ "$PORT" != "0" ]; then
+          echo "**Direct**: [http://$SERVER_IP:$PORT](http://$SERVER_IP:$PORT)" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "**Port**: \`$PORT\` (use your server IP)" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        cat >> $GITHUB_STEP_SUMMARY << EOF
+        
+        ### 📊 Monitor Progress
+        \`\`\`bash
+        # Check background process
+        sudo tail -f /var/log/bg_deploy_$REPO.log
+        
+        # Check Laravel service
+        sudo systemctl status laravel-$REPO
+        
+        # View Laravel logs
+        sudo tail -f /var/log/laravel-$REPO.log
+        \`\`\`
+        
+        ---
+        *⚡ Quick deploy completed in < 1 minute*  
+        *🔄 Full setup running in background on server*
+        EOF

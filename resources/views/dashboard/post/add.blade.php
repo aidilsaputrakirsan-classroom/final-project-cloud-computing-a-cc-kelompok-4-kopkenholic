@@ -138,50 +138,69 @@
 @section("script")
 <script src="{{ asset("assets/dashboard/plugins/sweetalert2/sweetalert2.all.js") }}"></script>
 <script src="{{ asset("assets/dashboard/plugins/select2/js/select2.full.min.js") }}"></script>
-<script src="{{ asset("assets/dashboard/plugins/speakingurl/speakingurl.min.js") }}"></script>
-<script src="{{ asset("assets/dashboard/plugins/slugify/slugify.min.js") }}"></script>
 <script>
-    $(document).ready(function() {
-        $('#title').on("input", () => {
-            $('#slug').val($.slugify($('#title').val()));
-        });
-        $('#category').select2({
-            theme: 'bootstrap4'
-        });
+  $(document).ready(function() {
 
-      $('#tags').select2({
-    tags: true,
-    tokenSeparators: [','],
-    width: '100%',
-    theme: 'bootstrap4',
-    dropdownParent: $('#tags').closest('.form-group')
+    // Fungsi bikin slug sendiri, tanpa plugin
+    function makeSlug(text) {
+        return text
+            .toString()
+            .toLowerCase()
+            .trim()
+            // buang aksen (kalau ada)
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            // ganti selain huruf/angka jadi -
+            .replace(/[^a-z0-9]+/g, '-')
+            // hapus - dobel di awal/akhir
+            .replace(/^-+|-+$/g, '');
+    }
+
+    // Auto isi slug saat title diketik
+    $('#title').on('input', function () {
+        const title = $(this).val();
+        $('#slug').val(makeSlug(title));
+    });
+
+    $('#category').select2({
+        theme: 'bootstrap4'
+    });
+
+    $('#tags').select2({
+        tags: true,
+        tokenSeparators: [','],
+        width: '100%',
+        theme: 'bootstrap4',
+        dropdownParent: $('#tags').closest('.form-group')
+    });
+
+    $("#content").summernote({
+        placeholder: 'Write content...',
+        height: 170,
+    });
+
+    function readURL(input) {
+        if (input.files && input.files[0] && input.files[0].type.includes("image")) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#thumbnailpreview').removeClass("d-none");
+                $('#thumbnailpreview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            $("#thumbnail").val('');
+            $('#thumbnailpreview').addClass("d-none");
+            Swal.fire({
+                icon: "error",
+                text: "Select a valid image!"
+            });
+        }
+    }
+
+    $("#thumbnail").change(function(){
+        readURL(this);
+    });
 });
 
-        $("#content").summernote({
-            placeholder: 'Write content...',
-            height: 170,
-        });
-        function readURL(input) {
-            if (input.files && input.files[0] && input.files[0].type.includes("image")) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    $('#thumbnailpreview').removeClass("d-none");
-                    $('#thumbnailpreview').attr('src', e.target.result);
-                }
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                $("#thumbnail").val('');
-                $('#thumbnailpreview').addClass("d-none");
-                Swal.fire({
-                    icon: "error",
-                    text: "Select a valid image!"
-                });
-            }
-        }
-        $("#thumbnail").change(function(){
-            readURL(this);
-        });
-    });
 </script>
 <script>
 (function () {
