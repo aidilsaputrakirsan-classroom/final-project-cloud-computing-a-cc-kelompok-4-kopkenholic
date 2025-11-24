@@ -8,7 +8,11 @@
   @if ($__cats->count())
     <ul class="list-group list-group-flush">
       @foreach ($__cats as $c)
-        <li class="list-group-item">{{ $c->title }}</li>
+        <li class="list-group-item">
+          <a href="{{ route('frontend.category', $c->slug) }}">
+            {{ $c->title }}
+          </a>
+        </li>
       @endforeach
     </ul>
   @else
