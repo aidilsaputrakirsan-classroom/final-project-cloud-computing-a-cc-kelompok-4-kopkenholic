@@ -133,6 +133,13 @@
                         <p>Tags<i class="right fas fa-angle-left"></i></p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('dashboard.activity_logs.index') }}"
+                    class="nav-link {{ request()->routeIs('dashboard.activity_logs.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-list"></i>
+                        <p>Activity Log</p>
+                    </a>
+                </li>
                 <li class="nav-item {{ in_array(request()->route()->getName(), ["dashboard.users.index", "dashboard.users.create","dashboard.users.edit"]) ? "menu-open" : "" }}">
                     <a href="#" class="nav-link {{ in_array(request()->route()->getName(), ["dashboard.users.index", "dashboard.users.create", "dashboard.users.edit"]) ? "active" : "" }}">
                         <i class="nav-icon fas fa-user"></i>
