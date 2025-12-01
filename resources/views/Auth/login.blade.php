@@ -23,12 +23,12 @@
                         <div class="form-group">
                             <input type="password" class="form-control" placeholder="Password*" name="password"/>
                         </div>
-                        <div class="sign-controls form-group">
+                        <!-- <div class="sign-controls form-group">
                             <div class="custom-control custom-checkbox">
                             <input type="checkbox" name="remember" value="1" class="custom-control-input" id="rememberMe">
                                 <label class="custom-control-label" for="rememberMe">Remember Me</label>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form-group">
                             <button type="submit" class="btn-custom">Log In</button>
                         </div>

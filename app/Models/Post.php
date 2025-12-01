@@ -36,9 +36,15 @@ class Post extends Model
          return $this->belongsTo(\App\Models\Category::class)->withTrashed();
     }
 
-    public function user() {
-        return $this->belongsTo(User::class);
-    }
+    public function user()
+{
+    return $this->belongsTo(User::class, 'user_id')->withDefault([
+        'name' => 'Unknown Author',
+        'username' => null,
+        'profile' => null,
+    ]);
+}
+
 
     public function readTime() {
         $minutesToRead = round(Str::wordCount(static::find($this->id)->content) / 200);

@@ -71,16 +71,29 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="tags">Tags</label>
-                                            <div class="select2-purple">
-                                                <select multiple="multiple" data-placeholder="Select tag" data-dropdown-css-class="select2-purple" class="form-control" name="tags[]" id="tags" style="width: 100%;">
-                                                    @foreach ($tags as $tag)
-                                                    <option value="{{ $tag->name }}">{{ $tag->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
+                                       <div class="form-group">
+    <label for="tags">Tags</label>
+    <div class="select2-purple">
+        <select multiple="multiple"
+                data-placeholder="Select tag"
+                data-dropdown-css-class="select2-purple"
+                class="form-control"
+                name="tags[]"
+                id="tags"
+                style="width: 100%;">
+
+            {{-- Hanya tampilkan tag yang sudah dipakai post --}}
+            @foreach ($post->tags as $tag)
+                <option value="{{ $tag->name }}" selected>
+                    {{ $tag->name }}
+                </option>
+            @endforeach
+
+        </select>
+    </div>
+</div>
+
+
                                         <div class="form-group">
                                             <label for="thumbnail">Thumbnail</label>
                                             <input type="file" class="form-control" id="thumbnail" name="thumbnail" accept="image/*"/>
@@ -128,95 +141,60 @@
 @endsection
 
 @section("script")
-<script src="{{ asset("assets/dashboard/plugins/sweetalert2/sweetalert2.all.js") }}"></script>
-<script src="{{ asset("assets/dashboard/plugins/select2/js/select2.full.min.js") }}"></script>
-<script src="{{ asset("assets/dashboard/plugins/speakingurl/speakingurl.min.js") }}"></script>
-<script src="{{ asset("assets/dashboard/plugins/slugify/slugify.min.js") }}"></script>
+<script src="{{ asset('assets/dashboard/plugins/sweetalert2/sweetalert2.all.js') }}"></script>
+<script src="{{ asset('assets/dashboard/plugins/select2/js/select2.full.min.js') }}"></script>
+<script src="{{ asset('assets/dashboard/plugins/speakingurl/speakingurl.min.js') }}"></script>
+<script src="{{ asset('assets/dashboard/plugins/slugify/slugify.min.js') }}"></script>
+
 <script>
     $(document).ready(function() {
-        $('#title').on("input", () => {
-            $('#slug').val($.slugify($('#title').val()));
+        // Auto slug dari title
+        $('#title').on('input', function () {
+            $('#slug').val($.slugify($(this).val()));
         });
+
+        // Select2 Category
         $('#category').select2({
             theme: 'bootstrap4'
         });
 
-         $('#tags').select2({
-    tags: true,
-    tokenSeparators: [','],
-    width: '100%',
-    theme: 'bootstrap4',
-    dropdownParent: $('#tags').closest('.form-group')
-});
-        @if ($post->tags_count > 0)
-        var tags = [];
-        @foreach ($post->tags as $tag)
-        tags.push('{{ $tag->name }}');
-        @endforeach
-        $('#tags').val(tags).trigger('change');
-        @endif
-        $("#content").summernote({
+        // Select2 Tags — tetap bisa tambah tag baru
+        $('#tags').select2({
+            tags: true,
+            tokenSeparators: [','],
+            width: '100%',
+            theme: 'bootstrap4',
+            dropdownParent: $('#tags').closest('.form-group'),
+            placeholder: 'Select tag'
+        });
+
+        // Summernote
+        $('#content').summernote({
             placeholder: 'Write content...',
             height: 200,
         });
+
+        // Preview thumbnail
         function readURL(input) {
-            if (input.files && input.files[0] && input.files[0].type.includes("image")) {
+            if (input.files && input.files[0] && input.files[0].type.includes('image')) {
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    $('#thumbnailpreview').removeClass("d-none");
+                    $('#thumbnailpreview').removeClass('d-none');
                     $('#thumbnailpreview').attr('src', e.target.result);
                 }
                 reader.readAsDataURL(input.files[0]);
             } else {
-                $("#thumbnail").val('');
-                $('#thumbnailpreview').addClass("d-none");
+                $('#thumbnail').val('');
+                $('#thumbnailpreview').addClass('d-none');
                 Swal.fire({
-                    icon: "error",
-                    text: "Select a valid image!"
+                    icon: 'error',
+                    text: 'Select a valid image!'
                 });
             }
         }
-        $("#thumbnail").change(function(){
+        $('#thumbnail').change(function(){
             readURL(this);
         });
     });
-</script>
-<script>
-(function () {
-  function initTags() {
-    if (!window.jQuery) return console.error('jQuery not found');
-    if (!$.fn.select2) {
-      // Load Select2 dari CDN bila plugin lokal gagal
-      var css = document.createElement('link');
-      css.rel = 'stylesheet';
-      css.href = 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css';
-      document.head.appendChild(css);
-
-      var css2 = document.createElement('link');
-      css2.rel = 'stylesheet';
-      css2.href = 'https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.6.2/dist/select2-bootstrap4.min.css';
-      document.head.appendChild(css2);
-
-      var js = document.createElement('script');
-      js.src = 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js';
-      js.onload = initTags; // init setelah CDN selesai
-      document.head.appendChild(js);
-      return;
-    }
-    var $el = $('#tags');
-    if (!$el.length) return console.error('#tags element not found');
-
-    $el.select2({
-      tags: true,
-      tokenSeparators: [',', ';'],
-      width: '100%',
-      theme: 'bootstrap4',
-      dropdownParent: $el.closest('.form-group'),
-      placeholder: 'Select tag'
-    });
-    console.log('Select2 ready on #tags');
-  }
-  document.addEventListener('DOMContentLoaded', initTags);
-})();
 </script>
 @endsection

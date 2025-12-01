@@ -34,7 +34,16 @@
                         </h3>
                         <ul class="entry-meta">
                             <li class="post-author-img"><img src="{{ asset("uploads/author/".($post->user->profile ?? "default.webp")) }}" alt="{{ $post->user->name }}"/></li>
-                            <li class="post-author"> <a href="{{ route("frontend.user", $post->user->username) }}">{{ $post->user->name }}</a></li>
+                           <li class="post-author">
+    @if($post->user && $post->user->username)
+        <a href="{{ route('frontend.user', $post->user->username) }}">
+            {{ $post->user->name }}
+        </a>
+    @else
+        {{ $post->user->name ?? 'Unknown Author' }}
+    @endif
+</li>
+
                             <li class="entry-cat"><a href="{{ route("frontend.category", $post->category->slug) }}" class="category-style-1"><span class="line"></span>{{ $post->category->title }}</a></li>
                             <li class="post-date"><span class="line"></span>{{ $post->created_at->format("F d, Y") }}</li>
                         </ul>
