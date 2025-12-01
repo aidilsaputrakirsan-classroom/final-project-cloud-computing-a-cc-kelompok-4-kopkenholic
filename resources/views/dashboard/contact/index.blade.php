@@ -61,7 +61,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button class="btn btn-sm btn-danger">
-                                                <i class="fas fa-trash"></i> Hapus
+                                                <i class="fas fa-trash"></i> Delete
                                             </button>
                                         </form>
                                     </td>

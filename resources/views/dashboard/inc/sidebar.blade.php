@@ -133,13 +133,6 @@
                         <p>Tags<i class="right fas fa-angle-left"></i></p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('dashboard.activity_logs.index') }}"
-                    class="nav-link {{ request()->routeIs('dashboard.activity_logs.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-list"></i>
-                        <p>Activity Log</p>
-                    </a>
-                </li>
                 <li class="nav-item {{ in_array(request()->route()->getName(), ["dashboard.users.index", "dashboard.users.create","dashboard.users.edit"]) ? "menu-open" : "" }}">
                     <a href="#" class="nav-link {{ in_array(request()->route()->getName(), ["dashboard.users.index", "dashboard.users.create", "dashboard.users.edit"]) ? "active" : "" }}">
                         <i class="nav-icon fas fa-user"></i>
@@ -161,14 +154,9 @@
                         </li>
                     </ul>
                 </li>
-
-                {{-- CONTACT MESSAGES --}}
-<li class="nav-item {{ in_array(request()->route()->getName(), [
-    'dashboard.contact.index'
-]) ? 'menu-open' : '' }}">
-    <a href="#" class="nav-link {{ in_array(request()->route()->getName(), [
-        'dashboard.contact.index'
-    ]) ? 'active' : '' }}">
+{{-- CONTACT MESSAGES --}}
+<li class="nav-item {{ request()->routeIs('dashboard.contact.*') ? 'menu-open' : '' }}">
+    <a href="#" class="nav-link {{ request()->routeIs('dashboard.contact.*') ? 'active' : '' }}">
         <i class="nav-icon fas fa-envelope"></i>
         <p>
             Messages
@@ -178,14 +166,36 @@
 
     <ul class="nav nav-treeview">
         <li class="nav-item">
-            <a href="{{ route('dashboard.contact.index') }}" 
-               class="nav-link {{ request()->route()->getName() == 'dashboard.contact.index' ? 'active' : '' }}">
+            <a href="{{ route('dashboard.contact.index') }}"
+               class="nav-link {{ request()->routeIs('dashboard.contact.index') ? 'active' : '' }}">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Inbox</p>
             </a>
         </li>
     </ul>
 </li>
+
+{{-- ACTIVITY LOGS --}}
+<li class="nav-item {{ request()->routeIs('dashboard.activity_logs.*') ? 'menu-open' : '' }}">
+    <a href="#" class="nav-link {{ request()->routeIs('dashboard.activity_logs.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-list"></i>
+        <p>
+            Activity Log
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('dashboard.activity_logs.index') }}"
+               class="nav-link {{ request()->routeIs('dashboard.activity_logs.index') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>All Logs</p>
+            </a>
+        </li>
+    </ul>
+</li>
+
 
                 <!-- <li class="nav-item {{ in_array(request()->route()->getName(), ["dashboard.pages.index", "dashboard.pages.create", "dashboard.pages.edit", "dashboard.pages.trashed"]) ? "menu-open" : "" }}">
                     <a href="#" class="nav-link {{ in_array(request()->route()->getName(), ["dashboard.pages.index", "dashboard.pages.create", "dashboard.pages.edit", "dashboard.pages.trashed"]) ? "active" : "" }}">

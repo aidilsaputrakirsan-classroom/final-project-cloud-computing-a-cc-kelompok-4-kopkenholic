@@ -1,7 +1,6 @@
 @php
     // Biar aman kalau $sitesettings atau $menu belum dikirim
     $ss = $sitesettings ?? null;
-    $menuItems = $menu ?? [];
 @endphp
 
 <header class="header navbar-expand-lg fixed-top">
@@ -30,18 +29,20 @@
             <div class="header-navbar">
                 <nav class="navbar">
                     <div class="collapse navbar-collapse" id="main_nav">
-                        @if (count($menuItems) > 0)
-                            <ul class="navbar-nav">
-                                @foreach ($menuItems as $item)
-                                    <li class="nav-item">
-                                        <a class="nav-link{{ request()->url() == $item['href'] ? ' active' : '' }}"
-                                           href="{{ $item['href'] }}">
-                                            {{ $item['text'] }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('frontend.home') ? 'active' : '' }}"
+                                   href="{{ route('frontend.home') }}">
+                                    Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('frontend.contact') ? 'active' : '' }}"
+                                   href="{{ route('frontend.contact') }}">
+                                    ContactUs
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </nav>
             </div>
@@ -50,7 +51,7 @@
                 <div class="theme-switch-wrapper">
                     <label class="theme-switch" for="checkbox">
                         <input type="checkbox" id="checkbox" />
-                        <span class="slider round ">
+                        <span class="slider round">
                             <i class="lar la-sun icon-light"></i>
                             <i class="lar la-moon icon-dark"></i>
                         </span>
