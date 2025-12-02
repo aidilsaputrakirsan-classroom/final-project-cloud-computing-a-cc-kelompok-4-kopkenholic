@@ -25,6 +25,7 @@ use App\Http\Controllers\Frontend\TagController;
 use App\Http\Controllers\Frontend\UserController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Dashboard\ContactMessageController;
+use App\Http\Controllers\Dashboard\ActivityLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('frontend.')->group(function () {
@@ -156,14 +157,18 @@ Route::name('dashboard.')->prefix('/dashboard')->middleware(['auth'])->group(fun
             Route::post('/menus/footer', [MenuController::class, 'footerUpdate'])->name('menus.footer.update');
         });
 
-    // contact messages (ADMIN)  // <-- TAMBAHAN
+    // contact messages (ADMIN)
     Route::prefix('/contact-messages')
         ->name('contact.')
         ->controller(ContactMessageController::class)
         ->middleware([\App\Http\Middleware\AdminMiddleware::class])
         ->group(function () {
-            Route::get('/', 'index')->name('index');          // daftar pesan masuk
+            Route::get('/', 'index')->name('index');           // daftar pesan masuk
             Route::delete('/{id}', 'destroy')->name('destroy'); // hapus pesan
         });
 
+    // activity logs (ADMIN)
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])
+        ->name('activity_logs.index')
+        ->middleware([\App\Http\Middleware\AdminMiddleware::class]);
 });
