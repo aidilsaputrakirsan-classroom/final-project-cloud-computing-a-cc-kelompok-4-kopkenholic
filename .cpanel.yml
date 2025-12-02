@@ -1,3 +1,11 @@
 ---
 deployment:
   tasks:
+    - export DEPLOYPATH=/home/karyasin/public_html
+
+    # copy file/folder inti laravel (kecuali "public")
+    - /bin/cp -R app bootstrap config database resources routes vendor artisan composer.* $DEPLOYPATH
+
+    # copy isi folder public ke public_html
+    - /bin/cp -R public/* $DEPLOYPATH
+    - /bin/cp public/.htaccess $DEPLOYPATH
