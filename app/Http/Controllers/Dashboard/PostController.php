@@ -13,14 +13,22 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use App\helpers\ActivityLogger; // ⬅️ TAMBAHAN: logger aktivitas
 
 class PostController extends Controller
 {
     public function index() {
         if (Auth::user()->role == 3) {
-            $posts = Post::with(["category", "tags", "user"])->withCount(["comments"])->orderBy("id", "DESC")->paginate(20);
+            $posts = Post::with(["category", "tags", "user"])
+                ->withCount(["comments"])
+                ->orderBy("id", "DESC")
+                ->paginate(20);
         } else {
-            $posts = Post::with(["category", "tags", "user"])->withCount(["comments"])->orderBy("id", "DESC")->where("user_id", Auth::id())->paginate(20);
+            $posts = Post::with(["category", "tags", "user"])
+                ->withCount(["comments"])
+                ->orderBy("id", "DESC")
+                ->where("user_id", Auth::id())
+                ->paginate(20);
         }
         return view("dashboard.post.index", compact("posts"));
     }
@@ -43,9 +51,11 @@ class PostController extends Controller
             "status" => ["required", Rule::in(["0", "1"])],
             "thumbnail" => ["required", "image"],
         ]);
+
         $image = $request->file("thumbnail");
         $imageName = md5(time().rand(11111, 99999)).".".$image->extension();
         $image->move(public_path("uploads/post"), $imageName);
+
         $post = Post::create([
             "user_id" => Auth::user()->id,
             "title" => $validated["title"],
@@ -57,12 +67,21 @@ class PostController extends Controller
             "enable_comment" => Arr::has($validated, "comment"),
             "status" => Auth::user()->role == 1 ? "0" : $validated["status"],
         ]);
+
         if (Arr::has($validated, "tags")) {
             foreach ($validated["tags"] as $tag) {
                 $tag = Tag::firstOrCreate(["name" => Str::lower($tag)]);
                 $post->tags()->attach([$tag->id]);
             }
         }
+
+        // 📝 LOG: CREATE POST
+        ActivityLogger::log(
+            'create',
+            'Membuat post: ' . $post->title,
+            $post->id
+        );
+
         return redirect()->route("dashboard.posts.index")->with("success", "Post created!");
     }
 
@@ -90,6 +109,7 @@ class PostController extends Controller
                 "status" => ["required", Rule::in(["0", "1"])],
                 "thumbnail" => ["nullable", "image"],
             ]);
+
             $post->title = $validated["title"];
             $post->slug = Str::slug($validated["slug"]);
             $post->category_id = $validated["category"];
@@ -97,6 +117,7 @@ class PostController extends Controller
             $post->is_featured = Arr::has($validated, "featured");
             $post->enable_comment = Arr::has($validated, "comment");
             $post->status = Auth::user()->role == 1 ? "0" : $validated["status"];
+
             if ($request->hasFile("thumbnail")) {
                 $image = $request->file("thumbnail");
                 $imageName = md5(time().rand(11111, 99999)).".".$image->extension();
@@ -106,7 +127,9 @@ class PostController extends Controller
                 }
                 $post->thumbnail = $imageName;
             }
+
             $post->save();
+
             if (Arr::has($validated, "tags")) {
                 $tagArr = [];
                 foreach ($validated["tags"] as $tag) {
@@ -117,6 +140,14 @@ class PostController extends Controller
             } else {
                 $post->tags()->sync([]);
             }
+
+            // 📝 LOG: UPDATE POST
+            ActivityLogger::log(
+                'update',
+                'Mengedit post: ' . $post->title,
+                $post->id
+            );
+
             return redirect()->route("dashboard.posts.index")->with("success", "Post updated!");
         }
         return back()->withErrors("Post not exists!");
@@ -125,6 +156,14 @@ class PostController extends Controller
     public function destroy($id) {
         $post = Post::find($id);
         if ($post && Gate::allows("update-post", $post)) {
+
+            // 📝 LOG: SOFT DELETE POST
+            ActivityLogger::log(
+                'delete',
+                'Menghapus (soft delete) post: ' . $post->title,
+                $post->id
+            );
+
             $post->delete();
             return back()->with("success", "Post deleted!");
         }
@@ -167,29 +206,27 @@ class PostController extends Controller
         return back()->withErrors("Post not exists!");
     }
 
-
     public function trashed()
-{
-    if (Auth::user()->role == 3) {
-        // Admin (role 3): lihat semua post yang dihapus
-        $posts = Post::onlyTrashed()
-            ->with(['category', 'tags', 'user']) // Hapus withTrashed() di relasi
-            ->withCount('comments')              // Hapus withTrashed() di komentar juga
-            ->orderBy('id', 'DESC')
-            ->paginate(20);
-    } else {
-        // User biasa: hanya lihat post miliknya yang dihapus
-        $posts = Post::onlyTrashed()
-            ->with(['category', 'tags', 'user'])
-            ->withCount('comments')
-            ->where('user_id', Auth::id())
-            ->orderBy('id', 'DESC')
-            ->paginate(20);
+    {
+        if (Auth::user()->role == 3) {
+            // Admin (role 3): lihat semua post yang dihapus
+            $posts = Post::onlyTrashed()
+                ->with(['category', 'tags', 'user'])
+                ->withCount('comments')
+                ->orderBy('id', 'DESC')
+                ->paginate(20);
+        } else {
+            // User biasa: hanya lihat post miliknya yang dihapus
+            $posts = Post::onlyTrashed()
+                ->with(['category', 'tags', 'user'])
+                ->withCount('comments')
+                ->where('user_id', Auth::id())
+                ->orderBy('id', 'DESC')
+                ->paginate(20);
+        }
+
+        return view('dashboard.post.trashed', compact('posts'));
     }
-
-    return view('dashboard.post.trashed', compact('posts'));
-}
-
 
     public function restore($id) {
         $post = Post::onlyTrashed()->find($id);
@@ -198,6 +235,14 @@ class PostController extends Controller
                 return back()->withErrors("Restore the category first!");
             }
             $post->restore();
+
+            // 📝 LOG: RESTORE POST
+            ActivityLogger::log(
+                'restore',
+                'Restore post: ' . $post->title,
+                $post->id
+            );
+
             return back()->with("success", "Post restored!");
         }
         return back()->withErrors("Post not exists!");
@@ -206,6 +251,14 @@ class PostController extends Controller
     public function delete($id) {
         $post = Post::onlyTrashed()->find($id);
         if ($post && Gate::allows("update-post", $post)) {
+
+            // 📝 LOG: FORCE DELETE POST
+            ActivityLogger::log(
+                'force-delete',
+                'Menghapus permanen post: ' . $post->title,
+                $post->id
+            );
+
             if (File::exists(public_path("uploads/post/".$post->thumbnail))) {
                 File::delete(public_path("uploads/post/".$post->thumbnail));
             }
