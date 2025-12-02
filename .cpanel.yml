@@ -1,21 +1,11 @@
 ---
 deployment:
   tasks:
-    # 1. Masuk ke folder repository
     - export DEPLOYPATH=/home/karyasin/public_html
 
-    # 2. Copy semua file Laravel ke public_html
-    - /bin/cp -r * $DEPLOYPATH
+    # copy file/folder inti laravel (kecuali "public")
+    - /bin/cp -R app bootstrap config database resources routes vendor artisan composer.* $DEPLOYPATH
 
-    # 3. Install vendor (Composer)
-    - cd $DEPLOYPATH && /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader
-
-    # 4. Set storage permissions
-    - find $DEPLOYPATH/storage -type d -exec chmod 775 {} \;
-    - find $DEPLOYPATH/storage -type f -exec chmod 664 {} \;
-
-    # 5. Clear & cache configuration
-    - php $DEPLOYPATH/artisan config:clear
-    - php $DEPLOYPATH/artisan config:cache
-    - php $DEPLOYPATH/artisan route:cache
-    - php $DEPLOYPATH/artisan view:cache
+    # copy isi folder public ke public_html
+    - /bin/cp -R public/* $DEPLOYPATH
+    - /bin/cp public/.htaccess $DEPLOYPATH
