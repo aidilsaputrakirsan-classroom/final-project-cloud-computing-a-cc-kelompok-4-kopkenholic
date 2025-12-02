@@ -19,110 +19,173 @@
             </div>
         </div>
     </div>
+
     <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
+
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">New Post</h3>
                         </div>
+
                         <div class="card-body">
+                            {{-- ERROR --}}
                             @if ($errors->any())
-                            <div class="alert alert-danger alert-dismissible">
-                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                                @foreach ($errors->all() as $error)
-                                <p class="m-0">{{ $error }}</p>
-                                @endforeach
-                            </div>
+                                <div class="alert alert-danger alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    <h5><i class="icon fas fa-ban"></i> Error!</h5>
+                                    @foreach ($errors->all() as $error)
+                                        <p class="m-0">{{ $error }}</p>
+                                    @endforeach
+                                </div>
                             @endif
+
+                            {{-- SUCCESS --}}
                             @if (session("success"))
-                            <div class="alert alert-success alert-dismissible">
-                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                <h5><i class="icon fas fa-check"></i> Success!</h5>
-                                <p class="m-0">{{ session("success") }}</p>
-                            </div>
+                                <div class="alert alert-success alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    <h5><i class="icon fas fa-check"></i> Success!</h5>
+                                    <p class="m-0">{{ session("success") }}</p>
+                                </div>
                             @endif
-                            <form action="{{ route("dashboard.posts.store") }}" enctype="multipart/form-data" method="POST">
+
+                            {{-- FORM MULAI DI SINI --}}
+                            <form action="{{ route('dashboard.posts.store') }}"
+                                  method="POST"
+                                  enctype="multipart/form-data">
                                 @csrf
+
                                 <div class="row">
-                                    <div class="col-md-8 mx-auto">
+                                    {{-- KOLOM KIRI --}}
+                                    <div class="col-md-8">
+
                                         <div class="form-group">
                                             <label for="title">Title</label>
-                                            <input type="text" class="form-control" id="title" name="title" placeholder="Enter title" value="{{ old('title') }}"/>
+                                            <input
+                                                type="text"
+                                                id="title"
+                                                name="title"
+                                                class="form-control"
+                                                placeholder="Enter title"
+                                                value="{{ old('title') }}">
                                         </div>
+
                                         <div class="form-group">
                                             <label for="slug">Slug</label>
-                                            <input type="text" class="form-control" id="slug" name="slug" placeholder="Enter slug" value="{{ old('slug') }}"/>
+                                            <input
+                                                type="text"
+                                                id="slug"
+                                                name="slug"
+                                                class="form-control"
+                                                placeholder="Enter slug"
+                                                value="{{ old('slug') }}">
                                         </div>
+
                                         <div class="form-group">
                                             <label for="content">Content</label>
-                                            <textarea class="form-control" id="content" name="content" placeholder="Write content">{{ old('content') }}</textarea>
+                                            <textarea
+                                                id="content"
+                                                name="content"
+                                                class="form-control"
+                                                placeholder="Write content">{{ old('content') }}</textarea>
                                         </div>
+
                                     </div>
-                                    <div class="col-md-4 mx-auto">
+
+                                    {{-- KOLOM KANAN --}}
+                                    <div class="col-md-4">
+
                                         <div class="form-group">
                                             <label for="category">Category</label>
-                                            <select class="form-control" name="category" id="category" style="width: 100%;">
+                                            <select id="category" name="category" class="form-control">
                                                 @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}" {{ old("category") ? (old("category") == $category->id ? "selected" : "") : "" }}>{{ $category->title }}</option>
+                                                    <option value="{{ $category->id }}"
+                                                            {{ old('category') == $category->id ? 'selected' : '' }}>
+                                                        {{ $category->title }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                         </div>
-              <div class="form-group">
-  <label for="tags" class="font-weight-semibold">Tags</label>
-  <select
-    id="tags"
-    name="tags[]"
-    class="form-control form-control-lg select2bs4"
-    multiple="multiple"
-    data-placeholder="Tambahkan atau pilih tag..."
-    style="width: 100%; border: 1px solid #ced4da; border-radius: .25rem;">
-      @foreach ($tags as $tag)
-        <option value="{{ $tag->name }}">{{ $tag->name }}</option>
-      @endforeach
-  </select>
-  <small class="text-muted">
-    Tekan <b>Enter</b> atau <b>Koma (,)</b> untuk menambah tag baru.
-  </small>
-</div>
 
+                                        {{-- TAGS: INPUT + CHIP --}}
+                                        <div class="form-group">
+                                            <label for="tag-input">Tags</label>
+
+                                            {{-- container chip --}}
+                                            <div id="tags-chips"
+                                                 class="border rounded p-2 mb-2"
+                                                 style="min-height: 38px; cursor: text;"
+                                                 onclick="document.getElementById('tag-input').focus()">
+                                                {{-- chip akan ditambahkan lewat JS --}}
+                                            </div>
+
+                                            {{-- input untuk ketik tag --}}
+                                            <input
+                                                type="text"
+                                                id="tag-input"
+                                                class="form-control"
+                                                placeholder="Ketik tag lalu tekan Enter atau koma">
+
+                                            <small class="text-muted">
+                                                Ketik satu tag, lalu tekan <b>Enter</b> atau <b>Koma (,)</b> untuk menambah tag baru.
+                                            </small>
+                                        </div>
 
                                         <div class="form-group">
                                             <label for="thumbnail">Thumbnail</label>
-                                            <input type="file" class="form-control" id="thumbnail" name="thumbnail" accept="image/*"/>
-                                            <img id="thumbnailpreview" class="img-fluid img-thumbnail mt-3 d-none"/>
+                                            <input type="file"
+                                                   id="thumbnail"
+                                                   name="thumbnail"
+                                                   class="form-control"
+                                                   accept="image/*">
+                                            <img id="thumbnailpreview"
+                                                 class="img-fluid img-thumbnail mt-3 d-none">
                                         </div>
-                                        <div class="align-items-center d-flex form-group justify-content-between">
+
+                                        <div class="d-flex justify-content-between form-group">
                                             <label for="featured">Featured</label>
                                             <div class="icheck-success d-inline">
-                                                <input type="checkbox" name="featured" id="featured" value="1"/>
+                                                <input type="checkbox" id="featured" name="featured" value="1">
                                                 <label for="featured"></label>
                                             </div>
                                         </div>
-                                        <div class="align-items-center d-flex form-group justify-content-between">
+
+                                        <div class="d-flex justify-content-between form-group">
                                             <label for="comment">Enable Comment</label>
                                             <div class="icheck-success d-inline">
-                                                <input type="checkbox" name="comment" id="comment" value="1" checked/>
+                                                <input type="checkbox" id="comment" name="comment" value="1" checked>
                                                 <label for="comment"></label>
                                             </div>
                                         </div>
+
                                         <div class="form-group">
                                             <label for="status">Status</label>
-                                            <select class="form-control" name="status" id="status">
+                                            <select id="status" name="status" class="form-control">
                                                 @if (auth()->user()->role != 1)
-                                                <option value="1">Publish</option>
+                                                    <option value="1">Publish</option>
                                                 @endif
                                                 <option value="0">Draft</option>
                                             </select>
                                         </div>
+
                                     </div>
                                 </div>
-                                <button class="btn btn-primary" type="submit">Publish</button>
+
+                                {{-- TOMBOL PUBLISH (DALAM FORM) --}}
+                                <div class="mt-3">
+                                    <button type="submit" class="btn btn-primary">
+                                        Publish
+                                    </button>
+                                </div>
+
                             </form>
+                            {{-- FORM SELESAI DI SINI --}}
+
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -130,116 +193,88 @@
 </div>
 @endsection
 
-@section("style")
-<link rel="stylesheet" href="{{ asset("assets/dashboard/plugins/select2/css/select2.min.css") }}"/>
-<link rel="stylesheet" href="{{ asset("assets/dashboard/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css") }}"/>
-@endsection
+@push('scripts')
+<script src="{{ asset('assets/dashboard/plugins/sweetalert2/sweetalert2.all.js') }}"></script>
 
-@section("script")
-<script src="{{ asset("assets/dashboard/plugins/sweetalert2/sweetalert2.all.js") }}"></script>
-<script src="{{ asset("assets/dashboard/plugins/select2/js/select2.full.min.js") }}"></script>
 <script>
-  $(document).ready(function() {
+$(function () {
 
-    // Fungsi bikin slug sendiri, tanpa plugin
-    function makeSlug(text) {
-        return text
-            .toString()
-            .toLowerCase()
-            .trim()
-            // buang aksen (kalau ada)
+    // ===== AUTO SLUG DARI TITLE =====
+    function makeSlug(text){
+        return text.toString().toLowerCase().trim()
             .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-            // ganti selain huruf/angka jadi -
             .replace(/[^a-z0-9]+/g, '-')
-            // hapus - dobel di awal/akhir
             .replace(/^-+|-+$/g, '');
     }
 
-    // Auto isi slug saat title diketik
     $('#title').on('input', function () {
-        const title = $(this).val();
-        $('#slug').val(makeSlug(title));
+        $('#slug').val(makeSlug($(this).val()));
     });
 
-    $('#category').select2({
-        theme: 'bootstrap4'
-    });
+    // ===== SUMMERNOTE CONTENT (kalau plugin ada) =====
+    if (typeof $('#content').summernote === 'function') {
+        $('#content').summernote({
+            placeholder: 'Write content...',
+            height: 170
+        });
+    }
 
-    $('#tags').select2({
-        tags: true,
-        tokenSeparators: [','],
-        width: '100%',
-        theme: 'bootstrap4',
-        dropdownParent: $('#tags').closest('.form-group')
-    });
-
-    $("#content").summernote({
-        placeholder: 'Write content...',
-        height: 170,
-    });
-
-    function readURL(input) {
-        if (input.files && input.files[0] && input.files[0].type.includes("image")) {
-            var reader = new FileReader();
+    // ===== THUMBNAIL PREVIEW =====
+    $('#thumbnail').on('change', function () {
+        if (this.files && this.files[0] && this.files[0].type.includes("image")) {
+            let reader = new FileReader();
             reader.onload = function (e) {
-                $('#thumbnailpreview').removeClass("d-none");
-                $('#thumbnailpreview').attr('src', e.target.result);
-            }
-            reader.readAsDataURL(input.files[0]);
+                $('#thumbnailpreview')
+                    .attr('src', e.target.result)
+                    .removeClass('d-none');
+            };
+            reader.readAsDataURL($('#thumbnail')[0].files[0]);
         } else {
-            $("#thumbnail").val('');
-            $('#thumbnailpreview').addClass("d-none");
+            $('#thumbnail').val('');
+            $('#thumbnailpreview').addClass('d-none');
             Swal.fire({
                 icon: "error",
                 text: "Select a valid image!"
             });
         }
+    });
+
+    // ===== TAGS SIMPLE CHIP (TANPA SELECT2) =====
+    const tagsSet = new Set();
+    const $chips  = $('#tags-chips');
+    const $input  = $('#tag-input');
+
+    function addTag(raw) {
+        let name = (raw || '').trim().replace(/,$/, '');
+        if (!name) return;
+
+        let key = name.toLowerCase();
+        if (tagsSet.has(key)) return;
+
+        tagsSet.add(key);
+
+        const $chip   = $('<span class="badge badge-primary mr-1 mb-1"></span>');
+        const $label  = $('<span></span>').text(name);
+        const $remove = $('<a href="#" class="text-white ml-1">&times;</a>');
+        const $hidden = $('<input type="hidden" name="tags[]">').val(name);
+
+        $remove.on('click', function (e) {
+            e.preventDefault();
+            $chip.remove();
+            tagsSet.delete(key);
+        });
+
+        $chip.append($label).append($remove).append($hidden);
+        $chips.append($chip);
     }
 
-    $("#thumbnail").change(function(){
-        readURL(this);
+    $input.on('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            addTag($input.val());
+            $input.val('');
+        }
     });
 });
-
 </script>
-<script>
-(function () {
-  function initTags() {
-    if (!window.jQuery) return console.error('jQuery not found');
-    if (!$.fn.select2) {
-      // Load Select2 dari CDN bila plugin lokal gagal
-      var css = document.createElement('link');
-      css.rel = 'stylesheet';
-      css.href = 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css';
-      document.head.appendChild(css);
-
-      var css2 = document.createElement('link');
-      css2.rel = 'stylesheet';
-      css2.href = 'https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.6.2/dist/select2-bootstrap4.min.css';
-      document.head.appendChild(css2);
-
-      var js = document.createElement('script');
-      js.src = 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js';
-      js.onload = initTags; // init setelah CDN selesai
-      document.head.appendChild(js);
-      return;
-    }
-    var $el = $('#tags');
-    if (!$el.length) return console.error('#tags element not found');
-
-    $el.select2({
-      tags: true,
-      tokenSeparators: [',', ';'],
-      width: '100%',
-      theme: 'bootstrap4',
-      dropdownParent: $el.closest('.form-group'),
-      placeholder: 'Select tag'
-    });
-    console.log('Select2 ready on #tags');
-  }
-  document.addEventListener('DOMContentLoaded', initTags);
-})();
-</script>
-
-@endsection
-
+@endpush
