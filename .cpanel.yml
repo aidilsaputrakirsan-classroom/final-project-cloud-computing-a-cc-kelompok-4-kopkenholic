@@ -1,0 +1,21 @@
+---
+deployment:
+  tasks:
+    # 1. Masuk ke folder repository
+    - export DEPLOYPATH=/home/karyasin/public_html
+
+    # 2. Copy semua file Laravel ke public_html
+    - /bin/cp -r * $DEPLOYPATH
+
+    # 3. Install vendor (Composer)
+    - cd $DEPLOYPATH && /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader
+
+    # 4. Set storage permissions
+    - find $DEPLOYPATH/storage -type d -exec chmod 775 {} \;
+    - find $DEPLOYPATH/storage -type f -exec chmod 664 {} \;
+
+    # 5. Clear & cache configuration
+    - php $DEPLOYPATH/artisan config:clear
+    - php $DEPLOYPATH/artisan config:cache
+    - php $DEPLOYPATH/artisan route:cache
+    - php $DEPLOYPATH/artisan view:cache
