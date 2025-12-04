@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\ContactMessage;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ActivityLogger;
 
 class HomeController extends Controller
 {
