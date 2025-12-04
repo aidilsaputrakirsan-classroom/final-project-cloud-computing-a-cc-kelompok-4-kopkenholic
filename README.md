@@ -460,7 +460,7 @@ Melakukan penambahan user dengan mengisi data name, username, email, password, a
 ![dokumentasi](screenshoots/newuser.png)
 
 
-### 8. Massage
+### 8. Message
 Halaman berisikan pesan masuk
 ![dokumentasi](screenshoots/massage.png)
 
