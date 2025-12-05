@@ -52,7 +52,13 @@ Route::name('auth.')->group(function () {
 
 Route::name('dashboard.')->prefix('/dashboard')->middleware(['auth'])->group(function () {
     // dashboard home
-    Route::get('/', [DashboardHomeController::class, 'index'])->name('home');
+    // dashboard home
+Route::get('/', [DashboardHomeController::class, 'index'])->name('home');
+
+// ACTIVITY LOGS (ADMIN)
+Route::get('/activity-logs', [\App\Http\Controllers\Dashboard\ActivityLogController::class, 'index'])
+    ->name('activity_logs.index')
+    ->middleware([\App\Http\Middleware\AdminMiddleware::class]);
 
     // posts
     Route::prefix('/posts')->name('posts.')->controller(DashboardPostController::class)->group(function () {

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
-
+use App\Helpers\ActivityLogger;
 class CategoryController extends Controller
 {
     public function index() {

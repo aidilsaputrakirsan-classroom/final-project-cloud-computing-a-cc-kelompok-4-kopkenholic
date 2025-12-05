@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
-
+use App\Helpers\ActivityLogger;
 class ContactMessageController extends Controller
 {
     /**

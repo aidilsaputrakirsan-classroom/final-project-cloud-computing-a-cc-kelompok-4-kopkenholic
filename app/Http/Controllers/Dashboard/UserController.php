@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
+use App\Helpers\ActivityLogger;
 
 class UserController extends Controller
 {

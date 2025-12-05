@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SocialMedia;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Helpers\ActivityLogger;
 
 class SocialMediaController extends Controller
 {
