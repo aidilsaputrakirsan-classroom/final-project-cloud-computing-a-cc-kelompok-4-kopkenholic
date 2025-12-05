@@ -666,13 +666,16 @@ Setelah instalasi dan seeding database, Anda dapat login dengan akun default:
 
 #### Deployment
 
+Project ini dikembangkan menggunakan Laravel dan dideploy menggunakan Biznet Gio Neo Web Hosting (cPanel) dengan domain karyasi.my.id serta repository GitHub.
+
+Panduan ini menjelaskan cara menjalankan aplikasi di production, termasuk konfigurasi environment, upload project, struktur folder, dan optimasi.
+
 **Requirements Production**
 
-- PHP 8.2 atau lebih tinggi
-- PostgreSQL 12+ atau MySQL 8+
+- PHP 8.2 (Biznet sudah support)
+- MySQL 8+ (Neo Web Hosting)
 - Composer
-- Node.js 18+ & NPM
-- Web server dengan SSL certificate
+- SSL Certificate (Biznet sudah menyediakan otomatis)
 - Minimum 512MB RAM
 - 2GB storage space
 
@@ -686,10 +689,29 @@ Laravel Framework - https://laravel.com
 
 Tailwind CSS - https://tailwindcss.com
 
-Supabase - https://supabase.com
-
-
 Material Design Icons - https://materialdesignicons.com
+
+Vite - https://vitejs.dev  
+
+GitHub Repository - https://github.com  
+
+Biznet Gio Neo Web Hosting - https://biznetgio.com 
+
+PHP - https://www.php.net
+
+## Status
+
+Deployment dengan Git + cPanel sudah berjalan untuk domain: https://karyasi.my.id
+
+## Auto Deployment via GitHub
+
+Setiap perubahan di branch utama akan otomatis:
+
+- Ditangkap oleh cPanel Git Version Control
+
+- Menjalankan .cpanel.yml
+
+- Meng-update public_html tanpa upload manual
 
 ## Support
 
